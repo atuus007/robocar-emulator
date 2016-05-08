@@ -127,7 +127,7 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_rnd ( void )
   int rnd = std::rand() % sum;
 
   int sum2 = 0;
-
+  //10
   WayNodesVect::iterator j=iter->second.begin();
   for ( ; j!= iter->second.end(); ++j )
     {
@@ -155,7 +155,7 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_rernd ( void )
   int res = ( int ) ( ( double ) sum/.75 );
 
   int total = sum + cpv.size() * ( res/cpv.size() );
-
+  //11
   for ( osmium::unsigned_object_id_type& v : cpv )
     v += res/cpv.size();
 
@@ -164,7 +164,9 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_rernd ( void )
   int sum2 = 0;
 
   WayNodesVect::iterator j=cpv.begin();
-  for ( ; j!= cpv.end(); ++j )
+  //12 Átirva
+  //for ( ; j!= cpv.end(); ++j )
+    for ( auto j : cpv)
     {
       sum2 += *j;
       if ( sum2 >= rnd )
@@ -182,7 +184,7 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_mrernd ( void )
 {
   AdjacencyList::iterator iter = AntCar::alist.find ( m_from );
   AdjacencyList::iterator iter2 = AntCar::alist_evaporate.find ( m_from );
-
+  //13
   for ( WayNodesVect::iterator j=iter->second.begin(); j!= iter->second.end(); ++j )
     {
 
@@ -200,8 +202,8 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_mrernd ( void )
 
   int res = ( int ) ( ( double ) sum/.6 );
 
-  int total = sum + cpv.size() * ( res/cpv.size() );
-
+  int total = sum + cpv.size() * ( res/cpv.size() ); 
+  //13
   for ( osmium::unsigned_object_id_type& v : cpv )
     v += res/cpv.size();
 
@@ -210,6 +212,7 @@ osmium::unsigned_object_id_type justine::robocar::AntCar::ant_mrernd ( void )
   int sum2 = 0;
 
   WayNodesVect::iterator j=cpv.begin();
+  //14
   for ( ; j!= cpv.end(); ++j )
     {
       sum2 += *j;

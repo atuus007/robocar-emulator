@@ -30,6 +30,7 @@
  */
 
 #include <myshmclient.hpp>
+ #include <iterator>
 //#include <trafficlexer.hpp>
 
 char data[524288];
@@ -79,8 +80,11 @@ std::vector<justine::sampleclient::MyShmClient::Gangster> justine::sampleclient:
 
   std::cout.write ( data, length );
   std::cout << "Command GANGSTER sent." << std::endl;
-
-  return gangsters;
+   
+ /* if( gangsters.size() >0 )
+	return gangsters.begin();
+  else */
+  	return gangsters;
 }
 
 std::vector<justine::sampleclient::MyShmClient::Cop> justine::sampleclient::MyShmClient::initcops ( boost::asio::ip::tcp::socket & socket )
@@ -231,11 +235,10 @@ void justine::sampleclient::MyShmClient::route (
 {
 
   boost::system::error_code err;
-
-  size_t length = std::sprintf ( data,
-                                 "<route %d %d", path.size(), id );
-
-  for ( auto ui: path )
+  std::std::vector<osmium::unsigned_object_id_type>::iterator it4;
+  size_t length = std::sprintf ( data, "<route %d %d", path.size(), id );
+  //8 Átirva
+ for ( auto ui: path )
     length += std::sprintf ( data+length, " %u", ui );
 
   length += std::sprintf ( data+length, ">" );
@@ -265,55 +268,55 @@ void justine::sampleclient::MyShmClient::route (
 void justine::sampleclient::MyShmClient::start ( boost::asio::io_service& io_service, const char * port )
 {
 
-#ifdef DEBUG
-  foo();
-#endif
+    #ifdef DEBUG
+      foo();
+    #endif
 
-  boost::asio::ip::tcp::resolver resolver ( io_service );
-  boost::asio::ip::tcp::resolver::query query ( boost::asio::ip::tcp::v4(), "localhost", port );
-  boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve ( query );
+      boost::asio::ip::tcp::resolver resolver ( io_service );
+      boost::asio::ip::tcp::resolver::query query ( boost::asio::ip::tcp::v4(), "localhost", port );
+      boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve ( query );
 
-  boost::asio::ip::tcp::socket socket ( io_service );
-  boost::asio::connect ( socket, iterator );
+      boost::asio::ip::tcp::socket socket ( io_service );
+      boost::asio::connect ( socket, iterator );
 
-  int id = init ( socket );
+      int id = init ( socket );
 
-  pos ( socket, id );
+      pos ( socket, id );
 
-  unsigned int g {0u};
-  unsigned int f {0u};
-  unsigned int t {0u};
-  unsigned int s {0u};
+      unsigned int g {0u};
+      unsigned int f {0u};
+      unsigned int t {0u};
+      unsigned int s {0u};
 
-  std::vector<Gangster> gngstrs;
+      std::vector<Gangster> gngstrs;
 
-  for ( ;; )
-    {
-      std::this_thread::sleep_for ( std::chrono::milliseconds ( 200 ) );
-
-      car ( socket, id, &f, &t, &s );
-
-      gngstrs = gangsters ( socket, id, t );
-
-      if ( gngstrs.size() > 0 )
-        g = gngstrs[0].to;
-      else
-        g = 0;
-      if ( g > 0 )
+      for ( ;; )
         {
+          std::this_thread::sleep_for ( std::chrono::milliseconds ( 200 ) );
 
-          std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( t, g );
+          car ( socket, id, &f, &t, &s );
 
-          if ( path.size() > 1 )
+          gngstrs = gangsters ( socket, id, t ); 
+
+          if ( gngstrs.size() > 0 )
+            g = gngstrs[0].to;
+          else
+            g = 0;
+          if ( g > 0 )
             {
 
-              std::copy ( path.begin(), path.end(),
-                          std::ostream_iterator<osmium::unsigned_object_id_type> ( std::cout, " -> " ) );
+              std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( t, g ); 
 
-              route ( socket, id, path );
-            }
-        }
-    }
+              if ( path.size() > 1 )
+                {
+
+                  std::copy ( path.begin(), path.end(),
+                              std::ostream_iterator<osmium::unsigned_object_id_type> ( std::cout, " -> " ) );
+
+                  route ( socket, id, path );
+              }
+          }
+      }
 }
 
 void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_service, const char * port )
@@ -338,25 +341,34 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
   unsigned int s {0u};
 
   std::vector<Gangster> gngstrs;
-
+  std::vector<Car>::iterator it3;
   for ( ;; )
     {
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 200 ) );
-
-      for ( auto cop:cops )
+      //9 Átirva
+      for(std::vector<int>::iterator iterator = cops.begin(); iterator != cops.end(); ++iterator)
         {
-          car ( socket, cop, &f, &t, &s );
+          car ( socket, (*iterator), &f, &t, &s );
 
-          gngstrs = gangsters ( socket, cop, t );
+          gngstrs = gangsters ( socket, (*iterator), t );
+          //gngstrs = gangsters ( socket, cop, f );
 
-          if ( gngstrs.size() > 0 )
-            g = gngstrs[0].to;
-          else
-            g = 0;
+         g = 0;
+
+        for (size_t gi = 0; gi < gngstrs.size(); gi++) {
+            auto it = std::find(gChased.begin(), gChased.end(),
+                                gngstrs[gi].to);
+            if (it == gChased.end()) {
+                g = gngstrs[gi].to;
+                gChased.push_back(gngstrs[gi].to);
+                break;
+            }
+        }
 
           if ( g > 0 )
             {
 
+              //std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( f, g );
               std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( t, g );
 
               if ( path.size() > 1 )
@@ -365,7 +377,7 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
                   std::copy ( path.begin(), path.end(),
                               std::ostream_iterator<osmium::unsigned_object_id_type> ( std::cout, " -> " ) );
 
-                  route ( socket, cop, path );
+                  route ( socket, (*it3), path );
                 }
             }
         }

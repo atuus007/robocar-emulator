@@ -42,20 +42,23 @@ double justine::robocar::SmartCity::busWayLength ( bool verbose )
 {
 
   double sum_bus_length {0.0};
-  for ( auto busit = begin ( m_busWayNodesMap );
-        busit != end ( m_busWayNodesMap ); ++busit )
+   //for ( auto busit : = begin ( m_busWayNodesMap ); busit != end ( m_busWayNodesMap ); ++busit )
+  //7 Átírva
+  for ( auto busit : m_busWayNodesMap )
     {
 
       if ( verbose )
         std::cout << busit->first << ": ";
 
       double bus_length {sum_bus_length};
+      //8
       for ( auto ref : busit->second )
         {
 
           int i {1};
 
           osmium::Location prev_loc;
+          //9
           for ( auto node_ref : m_way2nodes[ref] )
             {
 
@@ -103,8 +106,7 @@ int main ( int argc, char* argv[] )
   ( "city", boost::program_options::value< std::string > (), "the name of the city" )
   ( "shm", boost::program_options::value< std::string > (), "shared memory segment name" )
   ( "node2gps", boost::program_options::value< std::string > (), "node2gps file name" )
-  ( "node2way", boost::program_options::value< std::string > (), "node2way file name" )
- ;
+  ;
 
   boost::program_options::variables_map vm;
   boost::program_options::store ( boost::program_options::parse_command_line ( argc, argv, desc ), vm );
@@ -140,12 +142,6 @@ int main ( int argc, char* argv[] )
   else
     node2gps_output.assign ( "../lmap.txt" );
 
-  std::string node2way_output;
-  if ( vm.count ( "node2way" ) )
-    node2way_output.assign ( vm["node2way"].as < std::string > () );
-  else
-    node2way_output.assign ( "../lmap.txt" );  
-  
   std::string city;
   if ( vm.count ( "city" ) )
     city.assign ( vm["city"].as < std::string > () );
@@ -170,9 +166,7 @@ int main ( int argc, char* argv[] )
     {
 
       if ( vm.count ( "node2gps" ) )
-        justine::robocar::SmartCity smartCity ( osm_input.c_str(), shm.c_str(), node2gps_output.c_str(), 0 );
-      else if ( vm.count ( "node2way" ) )
-        justine::robocar::SmartCity smartCity ( osm_input.c_str(), shm.c_str(), node2way_output.c_str(), 1 );
+        justine::robocar::SmartCity smartCity ( osm_input.c_str(), shm.c_str(), node2gps_output.c_str() );
       else
         justine::robocar::SmartCity smartCity ( osm_input.c_str(), shm.c_str() );
 

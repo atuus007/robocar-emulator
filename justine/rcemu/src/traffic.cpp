@@ -121,7 +121,7 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                     std::lock_guard<std::mutex> lock ( cars_mutex );
                     cars_copy = cars;
                   }
-                  std::vector<std::shared_ptr<Car>>::iterator it1;
+                  
                   std::stringstream ss;
                   ss <<
                      m_time <<
@@ -139,12 +139,14 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                          <<  " " << std::endl;
 
                     } */
-                    //1 Atirva
+                    //Atirva
+                    
+                    std::vector<std::shared_ptr<Car>>::iterator it1;
                     for ( it1=cars_copy.begin(); it1!=cars_copy.end(); it1++)
                     {
-                      (*(*it1)).step();
+                      (*it1)->step();
 
-                      ss << (*it1)
+                      ss << *(*it1)
                          <<  " " << std::endl;
 
                     }
@@ -163,9 +165,9 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
           else if ( cl.get_cmd() <100 )
             {
               std::lock_guard<std::mutex> lock ( cars_mutex );
-              //2 Átirva
+             //Átirva jó 2
              //for ( int i=0; i<cl.get_num(); ++i )
-		for(auto i : cl.get_num())
+		         for(auto i : cl.get_num())
                 {
 
                   if ( cl.get_role() =='c' )
@@ -228,15 +230,15 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                 {
 
                   bool hasGangsters {false};
-                  //3 Átirva
+                  //3 Átirva jó
                   std::vector<std::shared_ptr<SmartCar>>::iterator it5;
                   for ( it5=m_smart_cars.begin(); it5!=m_smart_cars.end(); it5++ )
                     {
-                      if ( (*(*it5)).get_type() == CarType::GANGSTER )
+                      if ( (*it5)->get_type() == CarType::GANGSTER )
                         {
                           length += std::sprintf ( data+length,
-                                                   "<OK %d %u %u %u>", cl.get_id(), (*(*it5)).from(),
-                                                   (*(*it5)).to_node(), (*(*it5)).get_step() );
+                                                   "<OK %d %u %u %u>", cl.get_id(), (*it5)->from(),
+                                                   (*it5)->to_node(), (*it5)->get_step() );
 
                           if ( length > network_buffer_size - 512 )
                             {
@@ -271,8 +273,8 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                   for ( it6=m_cop_cars.begin(); it6!=m_cop_cars.end(); it6++ )
                     {
                       length += std::sprintf ( data+length,
-                                               "<OK %d %u %u %u %d>", cl.get_id(), (*(*it5)).from(),
-                                               (*(*it5)).to_node(), (*(*it5)).get_step(), (*(*it5)).get_num_captured_gangsters() );
+                                               "<OK %d %u %u %u %d>", cl.get_id(), (*it5)->from(),
+                                               (*it6)->to_node(), (*it5)->get_step(), (*it5)->get_num_captured_gangsters() );
 
                       if ( length > network_buffer_size - 512 )
                         {
@@ -477,3 +479,4 @@ osmium::unsigned_object_id_type justine::robocar::Traffic::naive_node_for_neares
 
         return ret;
 }
+//6

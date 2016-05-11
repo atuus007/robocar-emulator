@@ -237,9 +237,11 @@ void justine::sampleclient::MyShmClient::route (
   boost::system::error_code err;
   std::std::vector<osmium::unsigned_object_id_type>::iterator it4;
   size_t length = std::sprintf ( data, "<route %d %d", path.size(), id );
-  //8 Átirva
- for ( auto ui: path )
-    length += std::sprintf ( data+length, " %u", ui );
+  //8 Átirva jó 1
+ std::vector<osmium::unsigned_object_id_type>::iterator it8;
+ for(it8=path.begin(); it8!=path.end(); it8++){
+ 	length+= std::sprintf(data+length, "%u",(*it8));
+ }
 
   length += std::sprintf ( data+length, ">" );
 
@@ -341,16 +343,17 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
   unsigned int s {0u};
 
   std::vector<Gangster> gngstrs;
-  std::vector<Car>::iterator it3;
+  
   for ( ;; )
     {
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 200 ) );
-      //9 Átirva
-      for(std::vector<int>::iterator iterator = cops.begin(); iterator != cops.end(); ++iterator)
+      //9 Átirva jó 2
+      std::std::vector<justine::sampleclient::MyShmClient::Cop>::iterator it9;
+      for(it9 = cops.begin(); it9 != cops.end(); ++it9)
         {
-          car ( socket, (*iterator), &f, &t, &s );
+          car ( socket, (*it9), &f, &t, &s );
 
-          gngstrs = gangsters ( socket, (*iterator), t );
+          gngstrs = gangsters ( socket, (*it9), t );
           //gngstrs = gangsters ( socket, cop, f );
 
          g = 0;
@@ -377,7 +380,7 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
                   std::copy ( path.begin(), path.end(),
                               std::ostream_iterator<osmium::unsigned_object_id_type> ( std::cout, " -> " ) );
 
-                  route ( socket, (*it3), path );
+                  route ( socket, (*it9), path );
                 }
             }
         }
